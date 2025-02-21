@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'play';
+    src: url('../src/assets/play.ttf') format('truetype');
+}
+
+* {
+    font-family: 'play' !important;
+    color: #FFE5B4;
+}
+
+.background {
+    background-color: #0e1012;
+}
