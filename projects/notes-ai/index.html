@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Resumidor de Notas do Google Keep</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        #notes-container,
+        #summary-container {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+        }
+
+        .note {
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #eee;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        #loading,
+        #error {
+            color: #666;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #error {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Resumidor de Notas do Google Keep</h1>
+
+    <button id="login-btn">Fazer Login no Google</button>
+
+    <div id="loading" style="display: none;">Carregando...</div>
+    <div id="error" style="display: none;"></div>
+
+    <div id="notes-container" style="display: none;">
+        <h2>Notas Encontradas</h2>
+        <div id="notes-list"></div>
+    </div>
+
+    <div id="summary-container" style="display: none;">
+        <h2>Resumo gerado por IA</h2>
+        <p id="summary-text"></p>
+    </div>
+
+    <script>
+        const loginBtn = document.getElementById('login-btn');
+        const loadingEl = document.getElementById('loading');
+        const errorEl = document.getElementById('error');
+        const notesContainer = document.getElementById('notes-container');
+        const notesList = document.getElementById('notes-list');
+        const summaryContainer = document.getElementById('summary-container');
+        const summaryText = document.getElementById('summary-text');
+
+        const BACKEND_URL = 'http://localhost:5000';
+
+        loginBtn.addEventListener('click', async () => {
+            try {
+                // Simular autenticação (substituir por Google OAuth real)
+                const response = await fetch(`${BACKEND_URL}/mock-google-notes`);
+
+                if (!response.ok) {
+                    throw new Error('Falha ao buscar notas');
+                }
+
+                const notes = await response.json();
+                displayNotes(notes);
+                generateSummary(notes);
+            } catch (error) {
+                showError(error.message);
+            }
+        });
+
+        function displayNotes(notes) {
+            notesContainer.style.display = 'block';
+            notesList.innerHTML = notes.map(note => `
+                <div class="note">
+                    <strong>${note.title}</strong>
+                    <p>${note.content}</p>
+                </div>
+            `).join('');
+        }
+
+        async function generateSummary(notes) {
+            try {
+                const response = await fetch(`${BACKEND_URL}/summarize`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ notes })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Falha na geração do resumo');
+                }
+
+                const result = await response.json();
+                summaryContainer.style.display = 'block';
+                summaryText.textContent = result.summary;
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        function showError(message) {
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>
