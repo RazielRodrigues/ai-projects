@@ -43,7 +43,7 @@
 <body>
     <h1>Resumidor de Notas do Google Keep</h1>
 
-    <button id="login-btn">Fazer Login no Google</button>
+    <button id="login-btn">Buscar Notas</button>
 
     <div id="loading" style="display: none;">Carregando...</div>
     <div id="error" style="display: none;"></div>
@@ -67,38 +67,34 @@
         const summaryContainer = document.getElementById('summary-container');
         const summaryText = document.getElementById('summary-text');
 
-        const BACKEND_URL = 'http://localhost:5000';
-
         loginBtn.addEventListener('click', async () => {
-            try {
-                // Simular autenticação (substituir por Google OAuth real)
-                const response = await fetch(`${BACKEND_URL}/mock-google-notes`);
+            // Limpar estados anteriores
+            loadingEl.style.display = 'block';
+            errorEl.style.display = 'none';
+            notesContainer.style.display = 'none';
+            summaryContainer.style.display = 'none';
 
-                if (!response.ok) {
+            try {
+                // Buscar notas
+                const notesResponse = await fetch('/mock-google-notes');
+
+                if (!notesResponse.ok) {
                     throw new Error('Falha ao buscar notas');
                 }
 
-                const notes = await response.json();
-                displayNotes(notes);
-                generateSummary(notes);
-            } catch (error) {
-                showError(error.message);
-            }
-        });
+                const notes = await notesResponse.json();
 
-        function displayNotes(notes) {
-            notesContainer.style.display = 'block';
-            notesList.innerHTML = notes.map(note => `
-                <div class="note">
-                    <strong>${note.title}</strong>
-                    <p>${note.content}</p>
-                </div>
-            `).join('');
-        }
+                // Exibir notas
+                notesContainer.style.display = 'block';
+                notesList.innerHTML = notes.map(note => `
+                    <div class="note">
+                        <strong>${note.title}</strong>
+                        <p>${note.content}</p>
+                    </div>
+                `).join('');
 
-        async function generateSummary(notes) {
-            try {
-                const response = await fetch(`${BACKEND_URL}/summarize`, {
+                // Gerar resumo
+                const summaryResponse = await fetch('/summarize', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -106,22 +102,21 @@
                     body: JSON.stringify({ notes })
                 });
 
-                if (!response.ok) {
+                if (!summaryResponse.ok) {
                     throw new Error('Falha na geração do resumo');
                 }
 
-                const result = await response.json();
+                const result = await summaryResponse.json();
                 summaryContainer.style.display = 'block';
                 summaryText.textContent = result.summary;
-            } catch (error) {
-                showError(error.message);
-            }
-        }
 
-        function showError(message) {
-            errorEl.textContent = message;
-            errorEl.style.display = 'block';
-        }
+                loadingEl.style.display = 'none';
+            } catch (error) {
+                loadingEl.style.display = 'none';
+                errorEl.textContent = error.message;
+                errorEl.style.display = 'block';
+            }
+        });
     </script>
 </body>
 

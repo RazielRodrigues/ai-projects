@@ -1,7 +1,7 @@
-// src/index.ts
-import express from 'express';
-import cors from 'cors';
-import { pipeline } from '@xenova/transformers';
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const { pipeline } = require('@xenova/transformers');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -10,24 +10,55 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Servir arquivos estáticos do frontend
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Summarization route
+// Mock Google Keep Notes
+const mockNotes = [
+    {
+        id: '1',
+        title: 'Projeto de Desenvolvimento',
+        content: 'Iniciar desenvolvimento do novo sistema. Precisamos definir os requisitos principais e criar um cronograma de implementação.'
+    },
+    {
+        id: '2',
+        title: 'Reunião de Equipe',
+        content: 'Preparar apresentação para reunião semanal. Discutir progresso dos projetos atuais e definir metas para próxima semana.'
+    },
+    {
+        id: '3',
+        title: 'Estudo de Novas Tecnologias',
+        content: 'Pesquisar sobre inteligência artificial generativa, machine learning e seus impactos no desenvolvimento de software.'
+    }
+];
+
+// Rota para servir o index.html como página principal
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Rota para notas mockadas
+app.get('/mock-google-notes', (req, res) => {
+    res.json(mockNotes);
+});
+
+// Rota de sumarização
 app.post('/summarize', async (req, res) => {
     try {
         const { notes } = req.body;
 
-        // Combine all note contents
+        // Combinar conteúdo de todas as notas
         const allNoteContents = notes.map(note =>
             `${note.title}: ${note.content}`
         ).join('\n\n');
 
-        // Load summarization pipeline
+        // Carregar pipeline de sumarização
         const summarizer = await pipeline(
             'summarization',
             'Xenova/distilbart-cnn-12-6'
         );
 
-        // Generate summary
+        // Gerar resumo
         const summary = await summarizer(allNoteContents, {
             max_length: 300,
             min_length: 100,
@@ -38,14 +69,18 @@ app.post('/summarize', async (req, res) => {
             summary: summary[0].summary_text
         });
     } catch (error) {
-        console.error('Summarization error:', error);
+        console.error('Erro na sumarização:', error);
         res.status(500).json({
-            error: 'Failed to generate summary'
+            error: 'Falha ao gerar resumo'
         });
     }
 });
 
-// Start server
+// Iniciar servidor
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Servidor rodando na porta ${PORT}`);
+    console.log(`Acesse: http://localhost:${PORT}`);
 });
+
+// Exportar para possível uso em testes
+module.exports = app;
