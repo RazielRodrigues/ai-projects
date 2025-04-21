@@ -1,9 +1,9 @@
-import LumusChat from "../components/LumusChat";
+import Vibefiner from "../components/Vibefiner";
 
 export default function Home() {
     return (
         <section className="w-full  relative background">
-            <LumusChat />
+            <Vibefiner />
         </section>
     )
 }

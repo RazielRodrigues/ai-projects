@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Servir arquivos estáticos do frontend
+// Servir arquivos estáticos do frontend (assumindo que estão na pasta 'public')
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Mock Google Keep Notes
@@ -42,26 +42,16 @@ app.get('/mock-google-notes', (req, res) => {
     res.json(mockNotes);
 });
 
-// Rota de sumarização
+// Rota de sumarização usando facebook/bart-large-cnn
 app.post('/summarize', async (req, res) => {
     try {
         const { notes } = req.body;
+        const allNoteContents = notes.map(note => `${note.title}: ${note.content}`).join('\n\n');
 
-        // Combinar conteúdo de todas as notas
-        const allNoteContents = notes.map(note =>
-            `${note.title}: ${note.content}`
-        ).join('\n\n');
-
-        // Carregar pipeline de sumarização
-        const summarizer = await pipeline(
-            'summarization',
-            'Xenova/distilbart-cnn-12-6'
-        );
-
-        // Gerar resumo
+        const summarizer = await pipeline('summarization', 'Xenova/distilbart-cnn-12-6');
         const summary = await summarizer(allNoteContents, {
-            max_length: 300,
-            min_length: 100,
+            max_length: 150,
+            min_length: 50,
             do_sample: false
         });
 
