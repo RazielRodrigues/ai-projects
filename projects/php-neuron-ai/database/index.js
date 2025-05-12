@@ -256,7 +256,7 @@ const records = [
 
 (async function main() {
     // Initialize a Pinecone client with your API key
-    const pc = new Pinecone({ apiKey: 'pcsk_6jWs1A_UpecUtyA12vs9AG1bHSHyjhUTZ69Q4f6ifetyVpSiTr2Br8LDY5FpMFn7NAWojV' });
+    const pc = new Pinecone({ apiKey: '' });
 
     // Create a dense index with integrated embedding
     const indexName = 'dense-index';
