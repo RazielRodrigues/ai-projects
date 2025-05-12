@@ -33,7 +33,7 @@ class AgenteComediante extends Agent
 
     // Esse é o "cerebro" do seu agente, a onde voce define o background dele
     // e o que ele deve fazer nesse caso a gente ta definindo ele como 
-    // o nosso asistente de analise do dev.to mas ele pode ser qualquer coisa
+    // o nosso asistente de piadas mas ele pode ser qualquer coisa
     public function instructions(): string
     {
         return new SystemPrompt(
