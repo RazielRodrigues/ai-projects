@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@pinecone-database/pinecone": "^5.1.2"
+  },
+  "scripts": {
+    "s": "node index.js --experimental-modules"
+  },
+  "type": "module"
+}

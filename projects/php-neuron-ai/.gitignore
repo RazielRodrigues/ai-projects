@@ -1,0 +1,4 @@
+vendor
+src/.env
+database/node_modules
+src/storage

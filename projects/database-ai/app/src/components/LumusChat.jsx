@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Alert, Button, Typography } from '@material-tailwind/react';
 import * as webllm from 'https://esm.run/@mlc-ai/web-llm';
 import { Fade } from 'react-awesome-reveal';
-import { biographyText, resumeText } from '../constants';
+import { biographyText } from '../constants';
 
 const LumusChat = () => {
   const [openAlert, setOpenAlert] = useState(true);

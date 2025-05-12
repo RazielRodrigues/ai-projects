@@ -4,7 +4,7 @@ import Router from './routes/Router';
 function App() {
 
   return (
-    <main className={`  background"}`}>
+    <main className={` h-full background"}`}>
       <NavbarDesktop />
       <Router />
     </main>
